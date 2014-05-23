@@ -1,9 +1,9 @@
 GettingAndCleaningData
 ======================
-repository for files and data sets required for Coursera class Getting and Cleaning Data
-tidy data project
+##repository for files and data sets required for Coursera class Getting and Cleaning Data
+##tidy data project
 
-Inlcudes files: 
+##Inlcudes files: 
 ###r-script file
 run_analysis.R
 ###resulting tidy data file
@@ -56,17 +56,17 @@ CStd=grep("std()",CLabels$V2,fixed=TRUE)
 replace_parens=function(x){gsub("[()]","",x)}
 CLabels$V2=sapply(CLabels$V2,replace_parens)
 
-###for readability, we will replace the commas separating the numbers with a dash
+####for readability, we will replace the commas separating the numbers with a dash
 replace_comma=function(x){gsub(",","-",x)}
 CLabels$V2=sapply(CLabels$V2,replace_comma)
 
-###If a dash exists in a variable name string, these are automatically converted to  a "." when adding column names in read.table(). Therefore, for readability and to avoid the conversion to ".", I've chosen to use the underscore to separate words in the variable names, despite the concern that this goes against naming convention
+####If a dash exists in a variable name string, these are automatically converted to  a "." when adding column names in read.table(). Therefore, for readability and to avoid the conversion to ".", I've chosen to use the underscore to separate words in the variable names, despite the concern that this goes against naming convention
 
 replace_dash=function(x){gsub("-","_",x)}
 CLabels$V2=sapply(CLabels$V2,replace_dash)
 
-###I feel that in this instance, casting all characters to lower case would drastically reduce readability.
-###In addition, I've chosen to leave the decimal point character in some of the variable names. Removing these characters would make these variables less descriptive and possibly misleading
+####I feel that in this instance, casting all characters to lower case would drastically reduce readability.
+####In addition, I've chosen to leave the decimal point character in some of the variable names. Removing these characters would make these variables less descriptive and possibly misleading
 
 ##Complete project task #3 by adding our processed labels to the numerical data sets
 ###read in test data, using CLabels to provide names for the columns
