@@ -1,41 +1,36 @@
 GettingAndCleaningData
 ======================
 repository for files and data sets required for Coursera class Getting and Cleaning Data
-
 tidy data project
 
-Inlcudes files: 
+#Inlcudes files: 
 #r-script file
 run_analysis.R
 #resulting tidy data file
 UCIHAR_avg_data.txt
 #input data files
-X_test.txt
-X_train.txt
-y_test.txt
-y_train.txt
-features.txt
+X_test.txt,
+X_train.txt,
+y_test.txt,
+y_train.txt,
+features.txt,
 
+#getting and cleaning data project instructions:
+You should create one R script called run_analysis.R that does the following:
 
-#getting and cleaning data project
-
-#Project instructions:
-#You should create one R script called run_analysis.R that does the following:
-
-#1. Merges the training and the test sets to create one data set.
-#2. Extracts only the measurements on the mean and standard deviation for each
-#   measurement. 
-#3. Uses descriptive activity names to name the activities in the data set
-#4. Appropriately labels the data set with descriptive activity names. 
-#5. Creates a second, independent tidy data set with the average of each variable 
-#   for each activity and each subject.
+1. Merges the training and the test sets to create one data set.
+2. Extracts only the measurements on the mean and standard deviation for each
+   measurement. 
+3. Uses descriptive activity names to name the activities in the data set
+4. Appropriately labels the data set with descriptive activity names. 
+5. Creates a second, independent tidy data set with the average of each variable 
+   for each activity and each subject.
 
 #Project implementation: 
 file run_analysis.R has been documented with decriptions of instructions and information
 regarding process choices
 
 I will describe many of the process decisions here.
-#===================================================
 
 Project task #3: "Uses descriptive activity names to name the activities in the data set".
 Implemented using the following multi step process:
@@ -55,14 +50,29 @@ CStd=grep("std()",CLabels$V2,fixed=TRUE) #collect row indices with std() in text
 Project task #4: "Appropriately labels the data set with descriptive activity names" is accomplished by 
 modfying the strings collected from features.txt
 #remove string characters that don't work well for variable names
-Requires the stringr package for str_replace_all function
-#install.packages("stringr")#install if necessary
-library(stringr)
-CLabels$V2=str_replace_all(CLabels$V2,"([()])","")#replace paranthesis with empty char
-CLabels$V2=str_replace_all(CLabels$V2,"([-,])",".")#replace dast and comma with period
-#Although some best practices recommend casting all alphabetic characters as lower case,
-#I feel that in this instance, that would drastically reduce readability.
 
+#remove the parenthesis from all strings
+replace_parens=function(x){gsub("[()]","",x)}
+CLabels$V2=sapply(CLabels$V2,replace_parens)
+
+#for readability, we will replace the commas separating the numbers with a dash
+replace_comma=function(x){gsub(",","-",x)}
+CLabels$V2=sapply(CLabels$V2,replace_comma)
+
+#If a dash exists in a variable name string, these are automatically converted to 
+# a "." when adding column names in read.table(). Therefore, for readability and to 
+# avoid the conversion to ".", I've chosen to use the underscore to separate words in 
+# the variable names, despite the concern that this goes against naming convention
+replace_dash=function(x){gsub("-","_",x)}
+CLabels$V2=sapply(CLabels$V2,replace_dash)
+
+#I feel that in this instance, casting all characters to lower case would 
+#drastically reduce readability.
+#CLabels$V2=to_lower(CLabels$V2)#don't do this
+
+#In addition, I've chosen to leave the decimal point character in some of the variable 
+# names. Removing these characters would make these variables less descriptive and 
+# possibly misleading
 
 Complete project task #3 by adding our processed labels to the numerical data sets
 #read in test data, using CLabels to provide names for the columns
