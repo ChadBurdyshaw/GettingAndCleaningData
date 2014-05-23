@@ -21,22 +21,39 @@ CMean=grep("mean()",CLabels$V2,fixed=TRUE)#collect row indices with mean() in te
 CStd=grep("std()",CLabels$V2,fixed=TRUE)#collect row indices with std() in text string
 
 #remove string characters that don't work well for variable names
-#install.packages("stringr")
-library(stringr)
-CLabels$V2=str_replace_all(CLabels$V2,"([()])","")#replace paranthesis with empty char
-CLabels$V2=str_replace_all(CLabels$V2,"([-,])",".")#replace dast and comma with period
-#Although some best practices recommend casting all alphabetic characters as lower case,
-#I feel that in this instance, that would drastically reduce readability.
+
+#remove the parenthesis from all strings
+replace_parens=function(x){gsub("[()]","",x)}
+CLabels$V2=sapply(CLabels$V2,replace_parens)
+
+#for readability, we will replace the commas separating the numbers with a dash
+replace_comma=function(x){gsub(",","-",x)}
+CLabels$V2=sapply(CLabels$V2,replace_comma)
+
+#If a dash exists in a variable name string, these are automatically converted to 
+# a "." when adding column names in read.table(). Therefore, for readability and to 
+# avoid the conversion to ".", I've chosen to use the underscore to separate words in 
+# the variable names, despite the concern that this goes against naming convention
+replace_dash=function(x){gsub("-","_",x)}
+CLabels$V2=sapply(CLabels$V2,replace_dash)
+
+#I feel that in this instance, casting all characters to lower case would 
+#drastically reduce readability.
+#CLabels$V2=to_lower(CLabels$V2)#don't do this
+
+#In addition, I've chosen to leave the decimal point character in some of the variable 
+# names. Removing these characters would make these variables less descriptive and 
+# possibly misleading
 
 #read in test data, using CLabels to provide names for the columns
-Xtest=read.table("test/X_test.txt",sep="",dec=".",col.names=CLabels$V2)
-#read in test data labels and name the column "activity.label"
-Ytest=read.table("test/y_test.txt",col.names=c("activity.label"))
+Xtest=read.table("X_test.txt",sep="",dec=".",col.names=CLabels$V2)
+#read in test data labels and name the column "activityLabel"
+Ytest=read.table("y_test.txt",col.names=c("activityLabel"))
 
 #read in training data
-Xtrain=read.table("train/X_train.txt",sep="",dec=".",col.names=CLabels$V2)
-#read in training data labels and name the column "activity.label"
-Ytrain=read.table("train/y_train.txt",col.names=c("activity.label"))
+Xtrain=read.table("X_train.txt",sep="",dec=".",col.names=CLabels$V2)
+#read in training data labels and name the column "activityLabel"
+Ytrain=read.table("y_train.txt",col.names=c("activityLabel"))
 
 #join training and test variable sets into single set
 Xcomplete=rbind(Xtrain,Xtest)
@@ -45,7 +62,7 @@ Ycomplete=rbind(Ytrain,Ytest)
 
 #add Labels column to Xvariables data frame
 UCIHAR=Xcomplete
-UCIHAR$activity.label=Ycomplete$activity.label
+UCIHAR$activityLabel=Ycomplete$activityLabel
 
 #create subset which contains only the mean and stdev for each measurement
 #sort output so that each variables mean and std are grouped together
@@ -54,7 +71,6 @@ UCIHAR.MeanStdev=UCIHAR[sort(c(CMean,CStd))]
 #write data set to file (Don't actually do this. This is not the data set asked for in the instructions.)
 #write.table(UCIHAR.MeanStdev,"UCIHAR_MeanStdev.txt")
 
-str(UCIHAR.MeanStdev)
 #Creates a second, independent tidy data set which contains the average of each variable in the  
 #   for each activity and each subject.
 #I take this instruction to mean that we create a new data set which contains the mean of each of the variables
