@@ -3,10 +3,10 @@ GettingAndCleaningData
 repository for files and data sets required for Coursera class Getting and Cleaning Data
 tidy data project
 
-#Inlcudes files: 
-#r-script file
+Inlcudes files: 
+##r-script file
 run_analysis.R
-#resulting tidy data file
+##resulting tidy data file
 UCIHAR_avg_data.txt
 #input data files
 X_test.txt,
